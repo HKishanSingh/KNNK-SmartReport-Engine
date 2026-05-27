@@ -38,13 +38,12 @@ KNNK SmartReport Engine automates GAM &amp; DCM reporting with campaign mapping,
 * Automated warning and confidence indicators.
 
 **🛠 Technology Stack**
-* Python
-* Streamlit
-* Pandas & NumPy
-* XGBoost
-* Prophet
-* Google Sheets API
-* GSpread
+* Frontend/UI: Streamlit
+* Data Processing: Pandas, NumPy
+* Visualization: Streamlit Charts
+* Machin learning: XGboost, Prophet
+* Storage: Google Sheets API (gspread)
+* Authentication: Google Service Account
 
 **🎯 Business Value**
 
