@@ -6,11 +6,11 @@ KNNK SmartReport Engine automates GAM &amp; DCM reporting with campaign mapping,
 * Upload GAM and DCM reports directly.
 * Generate clean performance summaries instantly.
 * Export processed reports to Excel.
-Smart Campaign Mapping
+** Smart Campaign Mapping
 * Dynamic keyword-based mapping engine.
 * Google Sheets integration for centralized mapping management.
 * Supports custom campaign configurations.
-Performance Insights Engine
+** Performance Insights Engine
 * Identifies top and low-performing placements.
 * Highlights CTR trends, impression concentration, and optimization opportunities.
 * Generates actionable recommendations automatically.
