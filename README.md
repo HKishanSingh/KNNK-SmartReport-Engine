@@ -52,6 +52,9 @@ KNNK SmartReport Engine reduces manual reporting effort, improves forecast relia
 **Forecast. Reconcile. Analyze. Automate. 🚀📈**
 
 
+- # Live Link
+- https://knnk-smartreport-engine-bxn9sewb2ac7woianuwgrx.streamlit.app/
+
 - # Screenshot of the app
 <img width="1886" height="834" alt="image" src="https://github.com/user-attachments/assets/4ab21236-7d82-42cb-99db-792ae19a6f61" />
 <img width="1903" height="794" alt="image" src="https://github.com/user-attachments/assets/8a41ccdb-5dcd-4e92-8af4-66bd7fba1818" />
