@@ -2,7 +2,7 @@
 KNNK SmartReport Engine automates GAM &amp; DCM reporting with campaign mapping, reconciliation, performance insights, and ML-based forecasting. Built with Streamlit, Python, XGBoost, Prophet, and Google Sheets integration to transform raw campaign data into actionable insights.
 
 🚀 Key Features
-* Automated Reporting
+** Automated Reporting
 * Upload GAM and DCM reports directly.
 * Generate clean performance summaries instantly.
 * Export processed reports to Excel.
