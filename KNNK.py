@@ -75,7 +75,8 @@ def _gs_client():
 
 @st.cache_resource
 def _gs_sheet(_c):
-    return _c.open("Reporting with KN & NK EDA App").Sheet1
+    spreadsheet = _c.open("Reporting with KN & NK EDA App")
+    return spreadsheet.worksheet("Linkedin")
 
 try:
     _gc = _gs_client(); sheet = _gs_sheet(_gc); SHEET_OK = True
