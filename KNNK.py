@@ -75,7 +75,7 @@ def _gs_client():
 
 @st.cache_resource
 def _gs_sheet(_c):
-    return _c.open("Reporting with KN & NK EDA App").sheet1
+    return _c.open("Reporting with KN & NK EDA App").Link
 
 try:
     _gc = _gs_client(); sheet = _gs_sheet(_gc); SHEET_OK = True
