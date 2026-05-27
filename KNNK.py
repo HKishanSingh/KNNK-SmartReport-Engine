@@ -114,7 +114,7 @@ for _k, _v in [("mappings", None), ("show_fullview", False),
         st.session_state[_k] = load_mappings() if _k == "mappings" else _v
 
 LEGACY = {
-    pkey("GAM","Direct-NA-26-1632"): {
+    pkey("GAM","Direct-NA-26-1002"): {
         "Contextual Standard":"AV",
         "Contextual Marquee":"Contextual Thematic Targeted Custom Units Marquee and Interlude",
         "Thematic Interlude":"Contextual Thematic Targeted Custom Units Marquee and Interlude",
@@ -125,7 +125,7 @@ LEGACY = {
         "Audience YouTube":"Audience Targeted Business Insider Video YouTube In-Stream",
         "1P Audience Onsite":"Audience Targeted Business Insider Video Business Insider On-Site Pre-Roll",
         "3P Audience Onsite":"Audience Targeted Business Insider Video Business Insider On-Site Pre-Roll"},
-    pkey("GAM","Direct-NA-25-1625"): {
+    pkey("GAM","Direct-NA-25-1005"): {
         "Contextual_YouTube_National":"Contextual Targeted Business Insider YouTube In-Stream- Geo- National",
         "Contextual_On-Site_National":"Contextual Targeted Business Insider On-Site Pre-Roll- Geo- National",
         "AV_Contextual_Banners":"AV",
@@ -137,7 +137,7 @@ def get_map(platform, campaign):
     m  = st.session_state.mappings
     return m[pk] if (pk in m and m[pk]) else LEGACY.get(pk, {})
 
-DEFAULT_OPTIONS = ["Direct-NA-26-1632","Direct-NA-25-1625"]
+DEFAULT_OPTIONS = ["Direct-NA-26-1002","Direct-NA-25-1005"]
 dynamic = [k.split("::",1)[1] for k in st.session_state.mappings if "::" in k]
 all_options = sorted(set(DEFAULT_OPTIONS + dynamic))
 
