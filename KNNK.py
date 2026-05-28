@@ -153,6 +153,67 @@ def remove_total_rows(df, col):
     except Exception:
         return df.copy(), 0
 
+# ── File reader
+# ── Merged read_file:
+#    • GAM (and any non-DCM source): preserves the sheet-selector UI so users
+#      can pick "Ad Manager Report" or any other tab, matching original behaviour.
+#    • DCM: scans the first column for the row that contains "Campaign" and uses
+#      that row as the real header — handles DCM exports that have metadata rows
+#      above the actual data header.
+#    Both paths drop fully-blank rows and reset the index for clean downstream use.
+def read_file(uploaded, kp):
+    if uploaded is None:
+        return None
+    try:
+        # ── CSV: same for every source
+        if uploaded.name.endswith(".csv"):
+            df = pd.read_csv(uploaded)
+
+        # ── Excel: branch on source
+        else:
+            if kp.lower() == "dcm":
+                # Step 1 — read raw (no header) to locate the real header row
+                raw_df = pd.read_excel(uploaded, header=None)
+                header_rows = raw_df[
+                    raw_df.iloc[:, 0].astype(str).str.contains(
+                        "Campaign", case=False, na=False
+                    )
+                ].index
+
+                if len(header_rows) > 0:
+                    header_row = int(header_rows[0])
+                    # Step 2 — re-read using the detected header row
+                    uploaded.seek(0)
+                    df = pd.read_excel(uploaded, header=header_row)
+                else:
+                    # Fallback: no "Campaign" row found — read normally
+                    uploaded.seek(0)
+                    df = pd.read_excel(uploaded)
+
+            else:
+                # GAM (and any future non-DCM source): sheet selector UI
+                xls = pd.ExcelFile(uploaded)
+                default_sheet = (
+                    "Ad Manager Report"
+                    if "Ad Manager Report" in xls.sheet_names
+                    else xls.sheet_names[0]
+                )
+                ch = st.selectbox(
+                    f"Sheet — {uploaded.name}",
+                    xls.sheet_names,
+                    index=xls.sheet_names.index(default_sheet),
+                    key=f"{kp}_sheet",
+                )
+                df = pd.read_excel(uploaded, sheet_name=ch)
+
+        # ── Common cleanup for all paths
+        df = df.dropna(how="all").reset_index(drop=True)
+        return df
+
+    except Exception as e:
+        st.error(f"Error reading file ({kp.upper()}): {e}")
+        return None
+
 # ── Core processing
 def process_data(df, platform, campaign, date_range=None):
     try:
@@ -916,16 +977,6 @@ A simple guess (repeat yesterday) ignores this completely.
                        file_name=f"{option}_{sel}_{model_key}_{fd}d.xlsx",
                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                        use_container_width=True,key=f"dl_{model_key}")
-
-# ── File reader
-def read_file(uploaded, kp):
-    if uploaded is None: return None
-    if uploaded.name.endswith(".csv"): return pd.read_csv(uploaded)
-    xls=pd.ExcelFile(uploaded)
-    df_="Ad Manager Report" if "Ad Manager Report" in xls.sheet_names else xls.sheet_names[0]
-    ch=st.selectbox(f"Sheet — {uploaded.name}",xls.sheet_names,
-                    index=xls.sheet_names.index(df_),key=f"{kp}_sheet")
-    return pd.read_excel(uploaded,sheet_name=ch)
 
 # ── Mapping manager
 def mapping_ui(platform, _opts):
