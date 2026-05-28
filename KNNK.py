@@ -162,55 +162,134 @@ def remove_total_rows(df, col):
 #      above the actual data header.
 #    Both paths drop fully-blank rows and reset the index for clean downstream use.
 def read_file(uploaded, kp):
+
     if uploaded is None:
         return None
-    try:
-        # ── CSV: same for every source
-        if uploaded.name.endswith(".csv"):
-            df = pd.read_csv(uploaded)
 
-        # ── Excel: branch on source
-        else:
+    try:
+
+        # =========================
+        # CSV FILES
+        # =========================
+        if uploaded.name.endswith(".csv"):
+
             if kp.lower() == "dcm":
-                # Step 1 — read raw (no header) to locate the real header row
-                raw_df = pd.read_excel(uploaded, header=None)
+
+                # Read raw CSV
+                raw_df = pd.read_csv(uploaded, header=None)
+
+                # Find actual header row
                 header_rows = raw_df[
                     raw_df.iloc[:, 0].astype(str).str.contains(
-                        "Campaign", case=False, na=False
+                        "Campaign",
+                        case=False,
+                        na=False
                     )
                 ].index
 
                 if len(header_rows) > 0:
+
                     header_row = int(header_rows[0])
-                    # Step 2 — re-read using the detected header row
+
+                    # Reset pointer
                     uploaded.seek(0)
-                    df = pd.read_excel(uploaded, header=header_row)
+
+                    # Read again with proper header
+                    df = pd.read_csv(uploaded, header=header_row)
+
                 else:
-                    # Fallback: no "Campaign" row found — read normally
+
+                    uploaded.seek(0)
+                    df = pd.read_csv(uploaded)
+
+            else:
+
+                uploaded.seek(0)
+                df = pd.read_csv(uploaded)
+
+        # =========================
+        # EXCEL FILES
+        # =========================
+        else:
+
+            # ---------- DCM ----------
+            if kp.lower() == "dcm":
+
+                # Read raw sheet first
+                raw_df = pd.read_excel(uploaded, header=None)
+
+                # Detect header row
+                header_rows = raw_df[
+                    raw_df.iloc[:, 0].astype(str).str.contains(
+                        "Campaign",
+                        case=False,
+                        na=False
+                    )
+                ].index
+
+                if len(header_rows) > 0:
+
+                    header_row = int(header_rows[0])
+
+                    # Reset pointer
+                    uploaded.seek(0)
+
+                    # Read using detected header
+                    df = pd.read_excel(
+                        uploaded,
+                        header=header_row
+                    )
+
+                else:
+
                     uploaded.seek(0)
                     df = pd.read_excel(uploaded)
 
+            # ---------- GAM ----------
             else:
-                # GAM (and any future non-DCM source): sheet selector UI
+
                 xls = pd.ExcelFile(uploaded)
+
                 default_sheet = (
                     "Ad Manager Report"
                     if "Ad Manager Report" in xls.sheet_names
                     else xls.sheet_names[0]
                 )
+
                 ch = st.selectbox(
                     f"Sheet — {uploaded.name}",
                     xls.sheet_names,
                     index=xls.sheet_names.index(default_sheet),
                     key=f"{kp}_sheet",
                 )
-                df = pd.read_excel(uploaded, sheet_name=ch)
 
-        # ── Common cleanup for all paths
-        df = df.dropna(how="all").reset_index(drop=True)
+                uploaded.seek(0)
+
+                df = pd.read_excel(
+                    uploaded,
+                    sheet_name=ch
+                )
+
+        # =========================
+        # CLEANUP
+        # =========================
+
+        # Remove empty rows
+        df = df.dropna(how="all")
+
+        # Remove unnamed columns
+        df = df.loc[
+            :,
+            ~df.columns.astype(str).str.contains("^Unnamed")
+        ]
+
+        # Reset index
+        df = df.reset_index(drop=True)
+
         return df
 
     except Exception as e:
+
         st.error(f"Error reading file ({kp.upper()}): {e}")
         return None
 
